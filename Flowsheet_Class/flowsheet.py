@@ -12,12 +12,6 @@ from .utils_visualization import (
     plot_flowsheet_pyflowsheet,
 )
 
-try:
-    from PID_generation.PID_generator import Generate_flowsheet
-    PID_generator = True
-except ImportError:
-    PID_generator = False
-
 
 class Flowsheet:
     """This is a class to create flowsheets represented as a graphs.
@@ -334,33 +328,6 @@ class Flowsheet:
             self.flowsheet_SFILES_names = self.state.copy()
         self.sfiles_list, self.sfiles = nx_to_SFILES(self.flowsheet_SFILES_names, version, remove_hex_tags, canonical)
 
-    def create_random_flowsheet(self, add_sfiles=True):
-        """This methods creates a random flowsheet. The specification for the random flowsheet is created in a separate
-        class in the folder RandomFlowsheetGen_OC.
-
-        Parameters
-        ----------
-        add_sfiles: bool, default=True
-            True if SFILES representation should be added.
-        """
-        if PID_generator:
-            random_flowsheet = Generate_flowsheet()
-
-            for name in random_flowsheet.nodes:
-                self.add_unit(unique_name=name)
-
-            for connection in random_flowsheet.edges:
-                # Adjust tags: tags:[..] to tags:{'he':[..],'col':[..]}
-                regex_he = re.compile(r"(hot.*|cold.*|[0-9].*)")
-                regex_col = re.compile(r"(tout|tin|bout|bin)")
-                regex_signal = re.compile(r"not_next_unitop|next_unitop")
-                old_tags = connection[2]["tags"]
-                tags = {"he": [m.group(0) for k in old_tags for m in [regex_he.search(k)] if m],
-                        "col": [m.group(0) for k in old_tags for m in [regex_col.search(k)] if m],
-                        "signal": [m.group(0) for m in [regex_signal.search(str(old_tags))] if m]}
-                self.add_stream(connection[0], connection[1], tags=tags)
-            if add_sfiles:
-                self.convert_to_sfiles(version="v2")
 
     def visualize_flowsheet(self, figure=True, plot_with_stream_labels=True, table=True, plot_as_pfd=True,
                             pfd_block=True, decimals=3, pfd_path="plots/flowsheet", chemicalspecies=None,
