@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+SFILES 2.0 Demonstration Script
+Converts Process Flow Diagrams (PFDs) to SFILES text representation
+"""
+
 import os
 import sys
 import glob
@@ -6,19 +12,29 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
+# Try to import from the official SFILES2 package first
+try:
+    import sfiles2
+    HAS_SFILES2 = True
+    print("Using official SFILES2 package")
+except ImportError:
+    HAS_SFILES2 = False
+    print("SFILES2 package not installed, using mock implementation")
+
 # Add the Flowsheet_Class directory to the Python path
 sys.path.append('Flowsheet_Class')
 
-# Import your custom modules
+# Import your custom modules (optional)
 try:
-    from Flowsheet_Class.flowsheet import Flowsheet
-    from Flowsheet_Class.nx_to_sfiles import NetworkXToSFILES
-    from Flowsheet_Class.utils_visualization import FlowsheetVisualizer
-    from Flowsheet_Class.OntoCape_SFILES_mapping import OntoCapEMapper
-
+    from flowsheet import Flowsheet
+    from nx_to_sfiles import NetworkXToSFILES
+    from utils_visualization import FlowsheetVisualizer
+    from OntoCapE_SFILES_mapping import OntoCapEMapper
+    HAS_CUSTOM_MODULES = True
 except ImportError as e:
-    print(f"Warning: Could not import some modules: {e}")
-    print("Make sure all required modules are in the Flowsheet_Class directory")
+    print(f"Warning: Could not import custom modules: {e}")
+    print("Using mock implementations instead")
+    HAS_CUSTOM_MODULES = False
 
 
 class SFILESDemo:
@@ -278,12 +294,19 @@ class SFILESDemo:
 
 def main():
     """Main demonstration function"""
-    print("SFILES 2.0 Demonstration - PFD to Text Conversion")
-    print("=" * 55)
+    print("SFILES 2.0 Demonstration - PFD to NetworkX Graph to Text Conversion")
+    print("=" * 70)
+    print("Features:")
+    print("  • Load PFD images from PFD_Images folder")
+    print("  • Create NetworkX graph representation")
+    print("  • Visualize original image and graph side-by-side")
+    print("  • Analyze graph structure and connectivity")
+    print("  • Convert to SFILES 2.0 text notation")
+    print("  • Export results in multiple formats")
     
     # Check if PFD_Images directory exists
     if not Path("PFD_Images").exists():
-        print("PFD_Images directory not found!")
+        print("\n⚠️  PFD_Images directory not found!")
         print("Please make sure you have PFD images in the PFD_Images folder")
         return
     
@@ -292,7 +315,7 @@ def main():
     
     # Ask user for demo type
     print("\nSelect demonstration mode:")
-    print("1. Process all images automatically")
+    print("1. Process all images automatically (shows graphs for each)")
     print("2. Interactive mode (select individual images)")
     print("3. Exit")
     
