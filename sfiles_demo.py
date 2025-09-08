@@ -26,10 +26,10 @@ sys.path.append('Flowsheet_Class')
 
 # Import your custom modules (optional)
 try:
-    from flowsheet import Flowsheet
-    from nx_to_sfiles import NetworkXToSFILES
-    from utils_visualization import FlowsheetVisualizer
-    from OntoCapE_SFILES_mapping import OntoCapEMapper
+    from Flowsheet_Class.flowsheet import Flowsheet
+    from Flowsheet_Class.nx_to_sfiles import NetworkXToSFILES
+    from Flowsheet_Class.utils_visualization import FlowsheetVisualizer
+    from Flowsheet_Class.OntoCape_SFILES_mapping import OntoCapEMapper
     HAS_CUSTOM_MODULES = True
 except ImportError as e:
     print(f"Warning: Could not import custom modules: {e}")

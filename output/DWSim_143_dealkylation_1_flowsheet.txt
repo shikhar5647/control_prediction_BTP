@@ -1,0 +1,12 @@
+# Flowsheet data for DWSim_143_dealkylation_1.jpg
+
+Units:
+  F-101: Feed at (50, 200)
+  R-101: Reactor at (200, 200)
+  S-101: Separator at (350, 200)
+  P-101: Product at (500, 200)
+
+Streams:
+  S1: F-101 -> R-101
+  S2: R-101 -> S-101
+  S3: S-101 -> P-101
