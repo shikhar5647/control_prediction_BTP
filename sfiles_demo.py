@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
 """
 SFILES 2.0 Demonstration Script
 Converts Process Flow Diagrams (PFDs) to SFILES text representation
 """
-
 import os
 import sys
 import glob
