@@ -1,0 +1,7 @@
+matplotlib
+networkx
+pyflowsheet
+IPython
+numpy
+pandas
+tabulate
