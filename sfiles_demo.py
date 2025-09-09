@@ -9,6 +9,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
+import networkx as nx
 
 # Try to import from the official SFILES2 package first
 try:
@@ -103,6 +104,11 @@ class SFILESDemo:
             # Step 2: Create flowsheet object (mock implementation)
             print("Step 2: Creating flowsheet representation...")
             flowsheet = self.create_mock_flowsheet(image_name)
+
+            # Step 2.1: Build a NetworkX graph from the flowsheet and visualize it
+            print("Step 2.1: Building NetworkX graph and saving visualization...")
+            G = self.build_networkx_graph(flowsheet)
+            self.save_networkx_graph_image(G, image_name)
             
             # Step 3: Convert to SFILES notation
             print("Step 3: Converting to SFILES notation...")
@@ -177,6 +183,45 @@ class SFILESDemo:
         sfiles_string = "".join(sfiles_parts)
         
         return sfiles_string
+
+    def build_networkx_graph(self, flowsheet):
+        """
+        Build a NetworkX DiGraph from the mock flowsheet dict
+        """
+        G = nx.DiGraph()
+        # Add nodes with optional positions
+        for unit in flowsheet['units']:
+            # store type and position if available
+            G.add_node(unit['id'], type=unit['type'], pos=unit.get('position'))
+        # Add edges with stream names
+        for stream in flowsheet['streams']:
+            G.add_edge(stream['from'], stream['to'], name=stream['name'])
+        return G
+
+    def save_networkx_graph_image(self, G, image_name):
+        """
+        Save a visualization of the NetworkX graph to the output directory and display it.
+        """
+        base_name = image_name.split('.')[0]
+        out_path = self.output_dir / f"{base_name}_graph.png"
+
+        # Determine positions: use provided positions if any; else spring layout
+        pos_attr = nx.get_node_attributes(G, 'pos')
+        if len(pos_attr) == len(G.nodes()):
+            pos = pos_attr
+        else:
+            pos = nx.spring_layout(G, seed=42)
+
+        plt.figure(figsize=(8, 6))
+        nx.draw(G, pos, with_labels=True, node_size=1200, node_color="#9ecae1", edgecolors="#3182bd", font_size=10)
+        # Edge labels with stream names if available
+        edge_labels = nx.get_edge_attributes(G, 'name')
+        if edge_labels:
+            nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=9)
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=150)
+        plt.close()
+        print(f"Saved NetworkX graph image to {out_path}")
     
     def get_unit_notation(self, unit_type):
         """Get SFILES notation for unit type"""
